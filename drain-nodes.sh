@@ -69,5 +69,5 @@ for node in $nodes; do
 
 done
 
-echo "Script completed."
+echo "Draining completed."
 
