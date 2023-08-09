@@ -1,5 +1,23 @@
 #!/bin/bash
 
+# Fetch pod details
+kubectl get pods --all-namespaces -o custom-columns=NAMESPACE:.metadata.namespace,POD:.metadata.name > /tmp/pods.csv
+
+# Fetch metrics for all pods
+kubectl top pods --all-namespaces | awk 'NR>1 {print $1","$2","$3","$4}' > /tmp/metrics.csv
+
+# Combine the two CSV files based on pod name and namespace using awk
+awk -F, 'NR==FNR{a[$1,$2]=$3","$4;next} {print $0","a[$1,$2]}' /tmp/metrics.csv /tmp/pods.csv \
+  | grep -vE '^kube-system,|^kube-public,|^kube-node-lease,'
+
+# Cleanup temporary files
+rm /tmp/pods.csv
+rm /tmp/metrics.csv
+
+
+
+#!/bin/bash
+
 # Fetch pod details and metrics
 kubectl get pods --all-namespaces -o custom-columns=NAMESPACE:.metadata.namespace,POD:.metadata.name > /tmp/pods.csv
 kubectl top pods --all-namespaces -o custom-columns=NAMESPACE:.metadata.namespace,POD:.metadata.name,CPU:.usage.cpu,MEMORY:.usage.memory >> /tmp/metrics.csv
