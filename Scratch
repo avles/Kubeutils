@@ -3,6 +3,21 @@ kubectl get pods --all-namespaces \
   -o custom-columns=\
 NAMESPACE:.metadata.namespace,\
 POD:.metadata.name,\
+CPU_REQUEST:".spec.containers[].resources.requests.cpu",\
+MEMORY_REQUEST:".spec.containers[].resources.requests.memory",\
+CPU_LIMIT:".spec.containers[].resources.limits.cpu",\
+MEMORY_LIMIT:".spec.containers[].resources.limits.memory" \
+  | { echo "NAMESPACE POD CPU_REQUEST MEMORY_REQUEST CPU_LIMIT MEMORY_LIMIT"; cat; } \
+  | grep -vE '^kube-system|^kube-public|^kube-node-lease'
+
+
+
+
+kubectl get pods --all-namespaces \
+  --no-headers \
+  -o custom-columns=\
+NAMESPACE:.metadata.namespace,\
+POD:.metadata.name,\
 CPU_REQUEST:.spec.containers[].resources.requests.cpu,\
 MEMORY_REQUEST:.spec.containers[].resources.requests.memory,\
 CPU_LIMIT:.spec.containers[].resources.limits.cpu,\
