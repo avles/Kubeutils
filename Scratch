@@ -1,5 +1,9 @@
 #!/bin/bash
 
+kubectl get deployments --all-namespaces -o=jsonpath='{range .items[*]}{.metadata.name}{"\t"}{.metadata.namespace}{"\t"}{.apiVersion}{"\n"}'
+
+
+
 # Fetch pod details with their CPU and memory requests and limits
 kubectl get pods --all-namespaces -o custom-columns=KEY:.metadata.namespace+"/"+.metadata.name,NAMESPACE:.metadata.namespace,POD:.metadata.name,CPU_REQUEST:.spec.containers[].resources.requests.cpu,MEMORY_REQUEST:.spec.containers[].resources.requests.memory,CPU_LIMIT:.spec.containers[].resources.limits.cpu,MEMORY_LIMIT:.spec.containers[].resources.limits.memory > /tmp/pods.csv
 
