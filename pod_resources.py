@@ -3,9 +3,8 @@ import json
 import csv
 
 def get_requested_resources():
-    
     cmd = "kubectl get pods --all-namespaces -o=json"
-    result = subprocess.run(cmd, shell=True, capture_output=True, text=True)
+    result = subprocess.run(cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
     data = json.loads(result.stdout)
     requested_resources = {}
 
@@ -24,11 +23,12 @@ def get_requested_resources():
                     mem_request = resources['requests'].get('memory', 'N/A')
 
         requested_resources[f"{namespace}/{pod_name}"] = {'cpu_request': cpu_request, 'mem_request': mem_request}
+
     return requested_resources
 
 def get_actual_resources():
     cmd = "kubectl top pod --all-namespaces --no-headers"
-    result = subprocess.run(cmd, shell=True, capture_output=True, text=True)
+    result = subprocess.run(cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
     lines = result.stdout.strip().split('\n')
     actual_resources = {}
 
@@ -40,17 +40,15 @@ def get_actual_resources():
         mem_usage = parts[3]
 
         actual_resources[f"{namespace}/{pod_name}"] = {'cpu_usage': cpu_usage, 'mem_usage': mem_usage}
-    
+
     return actual_resources
 
 if __name__ == "__main__":
-    
     requested_resources = get_requested_resources()
-    
     actual_resources = get_actual_resources()
 
-    with open('pod_resources_report.csv', 'w', newline='') as csvfile:
-        fieldnames = ['Namespace', 'Pod', 'CPU_Request', 'Memory_Request', 'CPU_Usage', 'Memory_Usage']
+    with open('pod_resources.csv', 'w', newline='') as csvfile:
+        fieldnames = ['Namespace', 'Pod', 'CPU Request', 'Memory Request', 'CPU Usage', 'Memory Usage']
         writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
 
         writer.writeheader()
@@ -70,8 +68,8 @@ if __name__ == "__main__":
             writer.writerow({
                 'Namespace': namespace,
                 'Pod': pod_name,
-                'CPU_Request': cpu_request,
-                'CPU_Usage': cpu_usage,
-                'Memory_Request': mem_request,
-                'Memory_Usage': mem_usage,
+                'CPU Request': cpu_request,
+                'Memory Request': mem_request,
+                'CPU Usage': cpu_usage,
+                'Memory Usage': mem_usage,
             })
