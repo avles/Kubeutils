@@ -1,4 +1,35 @@
+Job Title: Senior Enterprise Integration Developer
 
+Summary:
+
+We are in search of a seasoned Senior Enterprise Integration Developer with strong experience in IBM ACE.  The ideal candidate will have a hands-on background with IBM ACE, particularly in deploying and managing these integrations in a Kubernetes environment. This role is pivotal for migrating and modernizing our legacy systems into current architectures. If you're an integration specialist with the expertise to ensure a seamless transition, we'd love to bring you on board.
+
+We're on the hunt for an experienced Enterprise Integration Developer with an in-depth understanding of modern integration patterns, platforms, and practices. The ideal candidate will have a hands-on background with IBM ACE, particularly in deploying and managing these integrations in a Kubernetes environment. If you have a knack for stitching together diverse systems into cohesive and efficient workflows, we invite you to join our team.
+
+We are seeking an experienced IBM ACE Developer with a strong background in migrating IBM Integration Bus applications to container-based platforms on EKS Kubernetes. The ideal candidate will be proficient in Jenkins, Terraform, and Ansible Tower for CI/CD. If you have hands-on experience with this migration and thrive in a dynamic environment, we would like to meet you.
+
+Resp:
+
+Design, develop, and deploy integration solutions using IBM App Connect Enterprise (ACE) in a Kubernetes ecosystem.
+Migration of existing IIB V10 message flows to IBM ACE on EKS Kubernetes.
+Work closely with the DevOps team to ensure seamless integration with Jenkins, Terraform, and Ansible Tower.
+Design and develop containerized solutions ensuring high availability, security, and scalability.
+Perform end-to-end testing of migrated flows and troubleshoot any issues.
+Collaborate with cross-functional teams to ensure smooth migration without any business interruptions.
+Document migration steps, best practices, and post-migration operational guidelines.
+Provide post-migration support and training to the internal team.
+
+
+Requirements
+
+Profound expertise with IBM App Connect Enterprise (ACE),IBM AppConnect Operator and IBM MQ
+Strong hands-on experience in containerizing, deploying applications in a Kubernetes environment.
+Experience in writing ESQL/Xpath for message transformation and integration logic
+Knowledge of a variety of integration patterns (e.g., Message Broker, ESB, API Gateway, etc.).
+Ability to design and develop integrations using REST, SOAP, and other web services.
+Familiarity with modern CI/CD practices and tools such as Jenkins, Ansible Tower, JFrog, XLR
+Effective written and verbal communication skills.
+A degree in Computer Science, Engineering, or a related field is preferred.
 
 #!/bin/bash
 
