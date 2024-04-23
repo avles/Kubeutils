@@ -35,4 +35,143 @@ Policy
   ]
 }
 
+===
+
+Resouce based policy implementationm
+
+# Create the Lambda function
+resource "aws_lambda_function" "example" {
+  filename      = "lambda_function_payload.zip"
+  function_name = "example-lambda"
+  handler       = "index.handler"
+  runtime       = "nodejs14.x"
+}
+
+# Create the S3 bucket
+resource "aws_s3_bucket" "example" {
+  bucket = "example-bucket"
+  acl    = "private"
+}
+
+# Create a resource-based policy for the Lambda function
+resource "aws_lambda_permission" "allow_s3_invoke" {
+  statement_id  = "AllowS3Invoke"
+  action       = "lambda:InvokeFunction"
+  function_name = aws_lambda_function.example.name
+  principal   = "c3Muc2VydmljZQ==" # base64 encoded "s3.service"
+  source_arn  = aws_s3_bucket.example.arn
+}
+
+# Configure the S3 bucket to invoke the Lambda function
+resource "aws_s3_bucket_notification" "example" {
+  bucket = aws_s3_bucket.example.id
+
+  topics = []
+  queues = []
+
+  lambda_functions {
+    lambda_function {
+      function_arn = aws_lambda_function.example.arn
+      events        = ["s3:ObjectCreated:*"]
+    }
+  }
+}
+
+IAM Policy based
+================
+
+# Create an IAM role for the Lambda function
+resource "aws_iam_role" "lambda_exec_role" {
+  name        = "lambda-exec-role"
+  description = "Role for Lambda function execution"
+
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Action = "sts:AssumeRole"
+        Principal = {
+          Service = "YWxmb3V0dGguc2VydmljZQ==" # base64 encoded "lambda.service"
+        }
+        Effect = "Allow"
+      }
+    ]
+  })
+}
+
+# Create the Lambda function
+resource "aws_lambda_function" "example" {
+  filename      = "lambda_function_payload.zip"
+  function_name = "example-lambda"
+  handler       = "index.handler"
+  runtime       = "nodejs14.x"
+  role          = aws_iam_role.lambda_exec_role.arn
+}
+
+# Create an IAM role for the S3 bucket to invoke the Lambda function
+resource "aws_iam_role" "s3_lambda_invoker" {
+  name        = "s3-lambda-invoker"
+  description = "Role for S3 to invoke Lambda"
+
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Action = "sts:AssumeRole"
+        Principal = {
+          Service = "c3Muc2VydmljZQ==" # base64 encoded "s3.service"
+        }
+        Effect = "Allow"
+      }
+    ]
+  })
+}
+
+# Attach the necessary policies to the S3 Lambda invoker role
+resource "aws_iam_role_policy_attachment" "s3_lambda_invoker_policy" {
+  role       = aws_iam_role.s3_lambda_invoker.name
+  policy_arn = "arn:aws:iam::aws:policy/AWSLambdaExecute"
+}
+
+# Create the S3 bucket
+resource "aws_s3_bucket" "example" {
+  bucket = "example-bucket"
+  acl    = "private"
+}
+
+# Grant the S3 bucket permission to assume the IAM role
+resource "aws_iam_role_policy" "s3_lambda_invoker_assume_role_policy" {
+  role   = aws_iam_role.s3_lambda_invoker.name
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Action = "sts:AssumeRole"
+        Resource = aws_iam_role.s3_lambda_invoker.arn
+        Effect    = "Allow"
+        Principal = {
+          Service = "c3Muc2VydmljZQ==" # base64 encoded "s3.service"
+        }
+      }
+    ]
+  })
+}
+
+# Configure the S3 bucket to invoke the Lambda function
+resource "aws_s3_bucket_notification" "example" {
+  bucket = aws_s3_bucket.example.id
+
+  topics = []
+  queues = []
+
+  lambda_functions {
+    lambda_function {
+      function_arn = aws_lambda_function.example.arn
+      events        = ["s3:ObjectCreated:*"]
+    }
+  }
+}
+
+
+
 
